@@ -269,11 +269,5 @@ const Progress = () => {
   );
 };
 
-const Stat = ({ label, value }: { label: string; value: number }) => (
-  <div className="bg-surface border border-border rounded-2xl p-3">
-    <p className="text-2xl font-semibold tracking-tight">{value}</p>
-    <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
-  </div>
-);
 
 export default Progress;
