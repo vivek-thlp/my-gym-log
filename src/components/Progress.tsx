@@ -72,16 +72,14 @@ const Progress = () => {
     }));
   }, [workouts, selectedExercise]);
 
-  const stats = useMemo(() => {
-    const last7 = workouts.filter(
-      (w) => parseISO(w.workout_date) >= subDays(new Date(), 7)
-    );
-    const totalReps = workouts.reduce((s, w) => s + w.sets * w.reps, 0);
-    return {
-      total: workouts.length,
-      last7: last7.length,
-      totalReps,
-    };
+  const setsByBodyPart = useMemo(() => {
+    const map = new Map<string, number>();
+    workouts.forEach((w) => {
+      map.set(w.body_part, (map.get(w.body_part) ?? 0) + w.sets);
+    });
+    return Array.from(map.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([id, sets]) => ({ id, sets, ...getBodyPart(id) }));
   }, [workouts]);
 
   const groupedByDate = useMemo(() => {
