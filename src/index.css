@@ -125,16 +125,30 @@
 
 @layer utilities {
   .glass {
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
     background-color: hsl(var(--background) / 0.72);
   }
 
   .tap-scale {
-    @apply transition-transform active:scale-[0.97];
+    @apply transition-transform duration-200 ease-out active:scale-[0.96];
   }
 
   .safe-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
 }
+
+@layer base {
+  button, a {
+    @apply transition-colors duration-200 ease-out;
+  }
+}
+

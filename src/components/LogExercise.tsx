@@ -75,13 +75,16 @@ const LogExercise = ({ bodyPart, onBack, onLogged }: Props) => {
         Back
       </button>
 
-      <div className="mb-6">
-        <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
-          <span>{bp.emoji}</span> {bp.label} day
-        </p>
-        <h2 className="text-3xl font-semibold tracking-tight mt-1">
-          Log a set
-        </h2>
+      <div className="mb-6 flex items-center gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-surface border border-border overflow-hidden shrink-0">
+          <img src={bp.image} alt={bp.label} width={48} height={48} className="w-full h-full object-contain p-1" />
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground font-medium">{bp.label} day</p>
+          <h2 className="text-3xl font-semibold tracking-tight mt-0.5">
+            Log a set
+          </h2>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
