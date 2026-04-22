@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getBodyPart } from "@/lib/bodyParts";
-import { format, parseISO, subDays } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { Trash2, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
@@ -118,12 +118,31 @@ const Progress = () => {
         <h2 className="text-3xl font-semibold tracking-tight mt-1">Your lifts</h2>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <Stat label="Total" value={stats.total} />
-        <Stat label="This week" value={stats.last7} />
-        <Stat label="Reps" value={stats.totalReps} />
-      </div>
+      {/* Sets per body part */}
+      {setsByBodyPart.length > 0 && (
+        <div className="mb-6">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+            Sets by body part
+          </p>
+          <div className="bg-surface rounded-2xl border border-border overflow-hidden">
+            {setsByBodyPart.map((b, i) => (
+              <div
+                key={b.id}
+                className={`flex items-center px-4 py-3 ${
+                  i !== setsByBodyPart.length - 1 ? "border-b border-border" : ""
+                }`}
+              >
+                <span className="text-xl mr-3">{b.emoji}</span>
+                <p className="flex-1 font-medium text-sm">{b.label}</p>
+                <p className="text-sm font-semibold tabular-nums">
+                  {b.sets}
+                  <span className="text-muted-foreground font-normal ml-1">sets</span>
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {workouts.length === 0 && (
         <div className="text-center py-16 text-muted-foreground">
