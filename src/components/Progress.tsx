@@ -134,7 +134,9 @@ const Progress = () => {
                   i !== setsByBodyPart.length - 1 ? "border-b border-border" : ""
                 }`}
               >
-                <span className="text-xl mr-3">{b.emoji}</span>
+                <div className="w-9 h-9 rounded-xl bg-background border border-border overflow-hidden mr-3 shrink-0">
+                  <img src={b.image} alt={b.label} width={36} height={36} loading="lazy" className="w-full h-full object-contain p-0.5" />
+                </div>
                 <p className="flex-1 font-medium text-sm">{b.label}</p>
                 <p className="text-sm font-semibold tabular-nums">
                   {b.sets}
@@ -243,7 +245,9 @@ const Progress = () => {
                           i !== items.length - 1 ? "border-b border-border" : ""
                         }`}
                       >
-                        <span className="text-xl mr-3">{bp.emoji}</span>
+                        <div className="w-9 h-9 rounded-xl bg-background border border-border overflow-hidden mr-3 shrink-0">
+                          <img src={bp.image} alt={bp.label} width={36} height={36} loading="lazy" className="w-full h-full object-contain p-0.5" />
+                        </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{w.exercise_name}</p>
                           <p className="text-xs text-muted-foreground mt-0.5">
