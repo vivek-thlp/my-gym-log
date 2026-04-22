@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getBodyPart } from "@/lib/bodyParts";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, subDays } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { Trash2, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
@@ -73,8 +73,10 @@ const Progress = () => {
   }, [workouts, selectedExercise]);
 
   const setsByBodyPart = useMemo(() => {
+    const cutoff = subDays(new Date(), 30);
     const map = new Map<string, number>();
     workouts.forEach((w) => {
+      if (parseISO(w.workout_date) < cutoff) return;
       map.set(w.body_part, (map.get(w.body_part) ?? 0) + w.sets);
     });
     return Array.from(map.entries())
@@ -122,7 +124,7 @@ const Progress = () => {
       {setsByBodyPart.length > 0 && (
         <div className="mb-6">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-            Sets by body part
+            Sets by body part · last 30 days
           </p>
           <div className="bg-surface rounded-2xl border border-border overflow-hidden">
             {setsByBodyPart.map((b, i) => (
