@@ -4,9 +4,10 @@ import { useAuth } from "@/hooks/useAuth";
 import BodyPartPicker from "@/components/BodyPartPicker";
 import LogExercise from "@/components/LogExercise";
 import ProgressView from "@/components/Progress";
-import { Dumbbell, BarChart3, LogOut } from "lucide-react";
+import BodyCondition from "@/components/BodyCondition";
+import { Dumbbell, BarChart3, PersonStanding, LogOut } from "lucide-react";
 
-type Tab = "log" | "progress";
+type Tab = "log" | "progress" | "body";
 type LogStep = "pick" | "logging";
 
 const Index = () => {
@@ -76,11 +77,12 @@ const Index = () => {
           />
         )}
         {tab === "progress" && <ProgressView />}
+        {tab === "body" && <BodyCondition />}
       </main>
 
       {/* Bottom Tab Bar */}
       <nav className="fixed bottom-0 inset-x-0 glass border-t border-border/60 safe-bottom z-10">
-        <div className="max-w-md mx-auto grid grid-cols-2">
+        <div className="max-w-md mx-auto grid grid-cols-3">
           <TabButton
             active={tab === "log"}
             onClick={() => {
@@ -95,6 +97,12 @@ const Index = () => {
             onClick={() => setTab("progress")}
             icon={<BarChart3 className="w-5 h-5" strokeWidth={2.2} />}
             label="Progress"
+          />
+          <TabButton
+            active={tab === "body"}
+            onClick={() => setTab("body")}
+            icon={<PersonStanding className="w-5 h-5" strokeWidth={2.2} />}
+            label="Body"
           />
         </div>
       </nav>
