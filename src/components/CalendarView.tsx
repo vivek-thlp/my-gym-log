@@ -241,7 +241,7 @@ const CalendarView = () => {
                           <img
                             src={bp.image}
                             alt={bp.label}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain brightness-0 invert"
                           />
                         </div>
                         <span className="text-xs font-medium">{bp.label}</span>
