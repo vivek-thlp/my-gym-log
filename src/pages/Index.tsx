@@ -5,9 +5,10 @@ import BodyPartPicker from "@/components/BodyPartPicker";
 import LogExercise from "@/components/LogExercise";
 import ProgressView from "@/components/Progress";
 import BodyCondition from "@/components/BodyCondition";
-import { Dumbbell, BarChart3, PersonStanding, LogOut } from "lucide-react";
+import CalendarView from "@/components/CalendarView";
+import { Dumbbell, BarChart3, PersonStanding, LogOut, CalendarDays } from "lucide-react";
 
-type Tab = "log" | "progress" | "body";
+type Tab = "log" | "progress" | "body" | "calendar";
 type LogStep = "pick" | "logging";
 
 const Index = () => {
@@ -78,11 +79,12 @@ const Index = () => {
         )}
         {tab === "progress" && <ProgressView />}
         {tab === "body" && <BodyCondition />}
+        {tab === "calendar" && <CalendarView />}
       </main>
 
       {/* Bottom Tab Bar */}
       <nav className="fixed bottom-0 inset-x-0 glass border-t border-border/60 safe-bottom z-10">
-        <div className="max-w-md mx-auto grid grid-cols-3">
+        <div className="max-w-md mx-auto grid grid-cols-4">
           <TabButton
             active={tab === "log"}
             onClick={() => {
@@ -97,6 +99,12 @@ const Index = () => {
             onClick={() => setTab("progress")}
             icon={<BarChart3 className="w-5 h-5" strokeWidth={2.2} />}
             label="Progress"
+          />
+          <TabButton
+            active={tab === "calendar"}
+            onClick={() => setTab("calendar")}
+            icon={<CalendarDays className="w-5 h-5" strokeWidth={2.2} />}
+            label="Calendar"
           />
           <TabButton
             active={tab === "body"}
