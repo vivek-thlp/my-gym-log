@@ -237,7 +237,7 @@ const CalendarView = () => {
                         key={pid}
                         className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-secondary"
                       >
-                        <div className="w-7 h-7 rounded-full bg-surface-elevated overflow-hidden flex items-center justify-center">
+                        <div className="w-7 h-7 rounded-full bg-white overflow-hidden flex items-center justify-center">
                           <img
                             src={bp.image}
                             alt={bp.label}
