@@ -225,9 +225,25 @@ const MusclePerformance = () => {
 
           {selectedMuscle && stats && (
             <>
+              <div className="flex gap-1 p-1 bg-secondary rounded-full mb-4 w-fit">
+                {([7, 30] as const).map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => setRange(r)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                      range === r
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {r} days
+                  </button>
+                ))}
+              </div>
+
               <div className="grid grid-cols-2 gap-3 mb-5">
                 <StatCard
-                  label="Last 30 days"
+                  label={`Last ${range} days`}
                   value={stats.recent.toLocaleString()}
                   unit="vol"
                   trend={stats.change}
@@ -238,9 +254,9 @@ const MusclePerformance = () => {
                   unit="total"
                 />
                 <StatCard
-                  label="Best session"
-                  value={stats.bestSession.toLocaleString()}
-                  unit="vol"
+                  label="Top set"
+                  value={topSet ? `${topSet.weight} × ${topSet.reps}` : "—"}
+                  unit={topSet ? "kg × reps" : "no weighted sets"}
                 />
                 <StatCard
                   label="Total volume"
