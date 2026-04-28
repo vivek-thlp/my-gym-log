@@ -81,6 +81,7 @@ const MusclePerformance = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMuscle, setSelectedMuscle] = useState<PrimaryMuscle | null>(null);
+  const [range, setRange] = useState<7 | 30>(30);
 
   useEffect(() => {
     const load = async () => {
@@ -135,31 +136,48 @@ const MusclePerformance = () => {
       }));
   }, [workouts, selectedMuscle]);
 
-  // Stats: last 30 days vs previous 30 days.
+  // Top set (heaviest weight; tiebreak by reps) for the selected muscle, all-time.
+  const topSet = useMemo(() => {
+    if (!selectedMuscle) return null;
+    let best: { weight: number; reps: number; date: string } | null = null;
+    workouts.forEach((w) => {
+      const primary = primaryByExercise.get(w.exercise_name.toLowerCase());
+      if (primary !== selectedMuscle) return;
+      if (w.weight == null) return;
+      if (
+        !best ||
+        w.weight > best.weight ||
+        (w.weight === best.weight && w.reps > best.reps)
+      ) {
+        best = { weight: w.weight, reps: w.reps, date: w.workout_date };
+      }
+    });
+    return best;
+  }, [workouts, selectedMuscle]);
+
+  // Stats: window (7 or 30 days) vs previous equal window.
   const stats = useMemo(() => {
     if (!selectedMuscle) return null;
     const now = new Date();
-    const last30 = subDays(now, 30);
-    const prev30 = subDays(now, 60);
+    const cutoff = subDays(now, range);
+    const prevCutoff = subDays(now, range * 2);
 
     let recent = 0;
     let previous = 0;
     let totalSessions = 0;
-    let bestSession = 0;
     let totalVolume = 0;
 
     series.forEach((s) => {
       const d = parseISO(s.date);
       totalSessions += 1;
       totalVolume += s.volume;
-      if (s.volume > bestSession) bestSession = s.volume;
-      if (d >= last30) recent += s.volume;
-      else if (d >= prev30) previous += s.volume;
+      if (d >= cutoff) recent += s.volume;
+      else if (d >= prevCutoff) previous += s.volume;
     });
 
     const change = previous === 0 ? (recent > 0 ? 100 : 0) : ((recent - previous) / previous) * 100;
-    return { recent, previous, change, totalSessions, bestSession, totalVolume };
-  }, [series, selectedMuscle]);
+    return { recent, previous, change, totalSessions, totalVolume };
+  }, [series, selectedMuscle, range]);
 
   if (loading) {
     return (
@@ -207,9 +225,25 @@ const MusclePerformance = () => {
 
           {selectedMuscle && stats && (
             <>
+              <div className="flex gap-1 p-1 bg-secondary rounded-full mb-4 w-fit">
+                {([7, 30] as const).map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => setRange(r)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                      range === r
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {r} days
+                  </button>
+                ))}
+              </div>
+
               <div className="grid grid-cols-2 gap-3 mb-5">
                 <StatCard
-                  label="Last 30 days"
+                  label={`Last ${range} days`}
                   value={stats.recent.toLocaleString()}
                   unit="vol"
                   trend={stats.change}
@@ -220,9 +254,9 @@ const MusclePerformance = () => {
                   unit="total"
                 />
                 <StatCard
-                  label="Best session"
-                  value={stats.bestSession.toLocaleString()}
-                  unit="vol"
+                  label="Top set"
+                  value={topSet ? `${topSet.weight} × ${topSet.reps}` : "—"}
+                  unit={topSet ? "kg × reps" : "no weighted sets"}
                 />
                 <StatCard
                   label="Total volume"
