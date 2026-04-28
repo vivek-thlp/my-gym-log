@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { EXERCISES, MUSCLES, MUSCLE_LABELS, type Muscle } from "@/lib/exercises";
+import { EXERCISES, type Muscle } from "@/lib/exercises";
 import { format, parseISO, subDays } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 import { Activity, TrendingUp, TrendingDown, Minus } from "lucide-react";
@@ -15,13 +15,72 @@ interface Workout {
   workout_date: string;
 }
 
-const targetsByExercise = new Map(EXERCISES.map((e) => [e.name.toLowerCase(), e.targets]));
+// Group sub-muscles into primary muscle groups the user thinks in.
+type PrimaryMuscle =
+  | "chest" | "back" | "shoulders" | "biceps" | "triceps" | "forearms"
+  | "quads" | "hamstrings" | "glutes" | "calves" | "adductors"
+  | "abs" | "obliques" | "lower_back" | "traps" | "cardio";
+
+const PRIMARY_LABELS: Record<PrimaryMuscle, string> = {
+  chest: "Chest",
+  back: "Back",
+  shoulders: "Shoulders",
+  biceps: "Biceps",
+  triceps: "Triceps",
+  forearms: "Forearms",
+  quads: "Quads",
+  hamstrings: "Hamstrings",
+  glutes: "Glutes",
+  calves: "Calves",
+  adductors: "Adductors",
+  abs: "Abs",
+  obliques: "Obliques",
+  lower_back: "Lower back",
+  traps: "Traps",
+  cardio: "Cardio",
+};
+
+const toPrimary = (m: Muscle): PrimaryMuscle => {
+  switch (m) {
+    case "chest_upper":
+    case "chest_lower":
+      return "chest";
+    case "lats":
+    case "rhomboids":
+      return "back";
+    case "front_delts":
+    case "side_delts":
+    case "rear_delts":
+      return "shoulders";
+    default:
+      return m as PrimaryMuscle;
+  }
+};
+
+// Pre-compute the PRIMARY muscle for each exercise (the muscle group with the largest combined share).
+const primaryByExercise = new Map<string, PrimaryMuscle>();
+EXERCISES.forEach((e) => {
+  const sums = new Map<PrimaryMuscle, number>();
+  Object.entries(e.targets).forEach(([m, share]) => {
+    const p = toPrimary(m as Muscle);
+    sums.set(p, (sums.get(p) ?? 0) + (share ?? 0));
+  });
+  let best: PrimaryMuscle | null = null;
+  let bestVal = 0;
+  sums.forEach((v, k) => {
+    if (v > bestVal) {
+      bestVal = v;
+      best = k;
+    }
+  });
+  if (best) primaryByExercise.set(e.name.toLowerCase(), best);
+});
 
 const MusclePerformance = () => {
   const { user } = useAuth();
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMuscle, setSelectedMuscle] = useState<Muscle | null>(null);
+  const [selectedMuscle, setSelectedMuscle] = useState<PrimaryMuscle | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -37,40 +96,34 @@ const MusclePerformance = () => {
     load();
   }, [user]);
 
-  // Per-workout volume contribution to each muscle: sets * reps * weight * share
+  // Volume per primary muscle = sets * reps * weight, attributed only to the primary muscle of the exercise.
   const trainedMuscles = useMemo(() => {
-    const totals = new Map<Muscle, number>();
+    const totals = new Map<PrimaryMuscle, number>();
     workouts.forEach((w) => {
-      const targets = targetsByExercise.get(w.exercise_name.toLowerCase());
-      if (!targets) return;
+      const primary = primaryByExercise.get(w.exercise_name.toLowerCase());
+      if (!primary) return;
       const load = w.sets * w.reps * (w.weight ?? 1);
-      Object.entries(targets).forEach(([m, share]) => {
-        const muscle = m as Muscle;
-        totals.set(muscle, (totals.get(muscle) ?? 0) + load * (share ?? 0));
-      });
+      totals.set(primary, (totals.get(primary) ?? 0) + load);
     });
-    return MUSCLES.filter((m) => (totals.get(m) ?? 0) > 0)
-      .map((m) => ({ muscle: m, volume: totals.get(m) ?? 0 }))
+    return Array.from(totals.entries())
+      .map(([muscle, volume]) => ({ muscle, volume }))
       .sort((a, b) => b.volume - a.volume);
   }, [workouts]);
 
-  // Auto-select first muscle once loaded
   useEffect(() => {
     if (!selectedMuscle && trainedMuscles.length > 0) {
       setSelectedMuscle(trainedMuscles[0].muscle);
     }
   }, [trainedMuscles, selectedMuscle]);
 
-  // Daily volume series for selected muscle
+  // Daily volume series for selected primary muscle.
   const series = useMemo(() => {
     if (!selectedMuscle) return [];
     const byDate = new Map<string, number>();
     workouts.forEach((w) => {
-      const targets = targetsByExercise.get(w.exercise_name.toLowerCase());
-      if (!targets) return;
-      const share = targets[selectedMuscle];
-      if (!share) return;
-      const load = w.sets * w.reps * (w.weight ?? 1) * share;
+      const primary = primaryByExercise.get(w.exercise_name.toLowerCase());
+      if (primary !== selectedMuscle) return;
+      const load = w.sets * w.reps * (w.weight ?? 1);
       byDate.set(w.workout_date, (byDate.get(w.workout_date) ?? 0) + load);
     });
     return Array.from(byDate.entries())
@@ -82,12 +135,12 @@ const MusclePerformance = () => {
       }));
   }, [workouts, selectedMuscle]);
 
-  // Stats: last 7 days vs previous 7 days, best session, total sessions
+  // Stats: last 30 days vs previous 30 days.
   const stats = useMemo(() => {
     if (!selectedMuscle) return null;
     const now = new Date();
-    const last7 = subDays(now, 7);
-    const prev7 = subDays(now, 14);
+    const last30 = subDays(now, 30);
+    const prev30 = subDays(now, 60);
 
     let recent = 0;
     let previous = 0;
@@ -100,8 +153,8 @@ const MusclePerformance = () => {
       totalSessions += 1;
       totalVolume += s.volume;
       if (s.volume > bestSession) bestSession = s.volume;
-      if (d >= last7) recent += s.volume;
-      else if (d >= prev7) previous += s.volume;
+      if (d >= last30) recent += s.volume;
+      else if (d >= prev30) previous += s.volume;
     });
 
     const change = previous === 0 ? (recent > 0 ? 100 : 0) : ((recent - previous) / previous) * 100;
@@ -131,7 +184,6 @@ const MusclePerformance = () => {
         </div>
       ) : (
         <>
-          {/* Muscle picker */}
           <div className="mb-5">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
               Select a muscle
@@ -147,7 +199,7 @@ const MusclePerformance = () => {
                       : "bg-secondary text-foreground hover:bg-secondary/70"
                   }`}
                 >
-                  {MUSCLE_LABELS[t.muscle]}
+                  {PRIMARY_LABELS[t.muscle]}
                 </button>
               ))}
             </div>
@@ -155,10 +207,9 @@ const MusclePerformance = () => {
 
           {selectedMuscle && stats && (
             <>
-              {/* Stats grid */}
               <div className="grid grid-cols-2 gap-3 mb-5">
                 <StatCard
-                  label="Last 7 days"
+                  label="Last 30 days"
                   value={stats.recent.toLocaleString()}
                   unit="vol"
                   trend={stats.change}
@@ -180,12 +231,11 @@ const MusclePerformance = () => {
                 />
               </div>
 
-              {/* Chart */}
               {series.length > 1 ? (
                 <div className="p-4 bg-surface rounded-2xl border border-border mb-5 animate-scale-in">
                   <div className="flex items-baseline justify-between mb-3">
-                    <p className="text-sm font-medium">{MUSCLE_LABELS[selectedMuscle]} volume</p>
-                    <p className="text-xs text-muted-foreground">sets × reps × weight × share</p>
+                    <p className="text-sm font-medium">{PRIMARY_LABELS[selectedMuscle]} volume</p>
+                    <p className="text-xs text-muted-foreground">sets × reps × weight</p>
                   </div>
                   <ResponsiveContainer width="100%" height={180}>
                     <LineChart data={series} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
@@ -228,7 +278,6 @@ const MusclePerformance = () => {
                 </p>
               )}
 
-              {/* Recent sessions */}
               <div>
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
                   Recent sessions
