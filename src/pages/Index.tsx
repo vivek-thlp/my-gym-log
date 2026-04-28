@@ -4,11 +4,11 @@ import { useAuth } from "@/hooks/useAuth";
 import BodyPartPicker from "@/components/BodyPartPicker";
 import LogExercise from "@/components/LogExercise";
 import ProgressView from "@/components/Progress";
-import BodyCondition from "@/components/BodyCondition";
+import MusclePerformance from "@/components/MusclePerformance";
 import CalendarView from "@/components/CalendarView";
-import { Dumbbell, BarChart3, PersonStanding, LogOut, CalendarDays } from "lucide-react";
+import { Dumbbell, BarChart3, Activity, LogOut, CalendarDays } from "lucide-react";
 
-type Tab = "log" | "progress" | "body" | "calendar";
+type Tab = "log" | "progress" | "muscles" | "calendar";
 type LogStep = "pick" | "logging";
 
 const Index = () => {
@@ -78,7 +78,7 @@ const Index = () => {
           />
         )}
         {tab === "progress" && <ProgressView />}
-        {tab === "body" && <BodyCondition />}
+        {tab === "muscles" && <MusclePerformance />}
         {tab === "calendar" && <CalendarView />}
       </main>
 
@@ -107,10 +107,10 @@ const Index = () => {
             label="Calendar"
           />
           <TabButton
-            active={tab === "body"}
-            onClick={() => setTab("body")}
-            icon={<PersonStanding className="w-5 h-5" strokeWidth={2.2} />}
-            label="Body"
+            active={tab === "muscles"}
+            onClick={() => setTab("muscles")}
+            icon={<Activity className="w-5 h-5" strokeWidth={2.2} />}
+            label="Muscles"
           />
         </div>
       </nav>
