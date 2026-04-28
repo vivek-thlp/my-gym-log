@@ -81,6 +81,7 @@ const MusclePerformance = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMuscle, setSelectedMuscle] = useState<PrimaryMuscle | null>(null);
+  const [range, setRange] = useState<7 | 30>(30);
 
   useEffect(() => {
     const load = async () => {
