@@ -32,6 +32,7 @@ const LogExercise = ({ bodyPart, onBack, onLogged }: Props) => {
   const [sets, setSets] = useState("3");
   const [reps, setReps] = useState("10");
   const [weight, setWeight] = useState("");
+  const [bodyWeight, setBodyWeight] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [submitting, setSubmitting] = useState(false);
   const [logCount, setLogCount] = useState(0);
