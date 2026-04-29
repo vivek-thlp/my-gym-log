@@ -167,18 +167,33 @@ const LogExercise = ({ bodyPart, onBack, onLogged }: Props) => {
                 required
               />
             </Field>
-            <Field label="Weight">
+            <Field label={selected.bodyweight ? "Added" : "Weight"}>
               <Input
                 type="number"
                 inputMode="decimal"
                 step="0.5"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
-                placeholder="kg"
+                placeholder={selected.bodyweight ? "+kg" : "kg"}
                 className="h-12 rounded-xl border-border bg-secondary text-base text-center"
               />
             </Field>
           </div>
+
+          {selected.bodyweight && (
+            <Field label="Body weight">
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="0.5"
+                value={bodyWeight}
+                onChange={(e) => setBodyWeight(e.target.value)}
+                placeholder="kg"
+                className="h-12 rounded-xl border-border bg-secondary text-base"
+                required
+              />
+            </Field>
+          )}
 
           <Field label="Date">
             <Input
