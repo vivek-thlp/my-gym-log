@@ -280,14 +280,14 @@ const MusclePerformance = () => {
                 )}
               </div>
 
-              {series.length > 1 ? (
+              {filteredSeries.length > 1 ? (
                 <div className="p-4 bg-surface rounded-2xl border border-border mb-5 animate-scale-in">
                   <div className="flex items-baseline justify-between mb-3">
                     <p className="text-sm font-medium">{PRIMARY_LABELS[selectedMuscle]} volume</p>
                     <p className="text-xs text-muted-foreground">sets × reps × weight</p>
                   </div>
                   <ResponsiveContainer width="100%" height={180}>
-                    <LineChart data={series} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+                    <LineChart data={filteredSeries} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                       <XAxis
                         dataKey="label"
