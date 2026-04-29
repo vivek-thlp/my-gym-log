@@ -155,24 +155,29 @@ const MusclePerformance = () => {
     return best;
   }, [workouts, selectedMuscle]);
 
-  // Stats: window (7 or 30 days) vs previous equal window.
+  // Stats: window vs previous equal window. For "all": no windowed comparison.
   const stats = useMemo(() => {
     if (!selectedMuscle) return null;
     const now = new Date();
-    const cutoff = subDays(now, range);
-    const prevCutoff = subDays(now, range * 2);
 
     let recent = 0;
     let previous = 0;
     let totalSessions = 0;
     let totalVolume = 0;
 
+    const isAll = range === "all";
+    const days = isAll ? 0 : (range as number);
+    const cutoff = isAll ? null : subDays(now, days);
+    const prevCutoff = isAll ? null : subDays(now, days * 2);
+
     series.forEach((s) => {
       const d = parseISO(s.date);
       totalSessions += 1;
       totalVolume += s.volume;
-      if (d >= cutoff) recent += s.volume;
-      else if (d >= prevCutoff) previous += s.volume;
+      if (!isAll && cutoff && prevCutoff) {
+        if (d >= cutoff) recent += s.volume;
+        else if (d >= prevCutoff) previous += s.volume;
+      }
     });
 
     const change = previous === 0 ? (recent > 0 ? 100 : 0) : ((recent - previous) / previous) * 100;
