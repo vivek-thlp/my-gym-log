@@ -274,7 +274,17 @@ const MusclePerformance = () => {
                 )}
               </div>
 
-              {series.length > 1 ? (
+              {(() => { /* render block below uses filteredSeries */ return null; })()}
+              {/* Filter series by selected range */}
+              {(() => null)()}
+
+              {(() => {
+                const filteredSeries = range === "all"
+                  ? series
+                  : series.filter((s) => parseISO(s.date) >= subDays(new Date(), range as number));
+                return (
+                  <>
+              {filteredSeries.length > 1 ? (
                 <div className="p-4 bg-surface rounded-2xl border border-border mb-5 animate-scale-in">
                   <div className="flex items-baseline justify-between mb-3">
                     <p className="text-sm font-medium">{PRIMARY_LABELS[selectedMuscle]} volume</p>
