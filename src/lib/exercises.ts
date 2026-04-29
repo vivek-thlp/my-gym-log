@@ -54,8 +54,9 @@ export const EXERCISES: Exercise[] = [
   { id: "db-fly", name: "Dumbbell Fly", bodyPart: "chest", targets: { chest_lower: 0.55, chest_upper: 0.3, front_delts: 0.15 } },
   { id: "cable-crossover", name: "Cable Crossover", bodyPart: "chest", targets: { chest_lower: 0.5, chest_upper: 0.35, front_delts: 0.15 } },
   { id: "pec-deck", name: "Pec Deck", bodyPart: "chest", targets: { chest_lower: 0.5, chest_upper: 0.4, front_delts: 0.1 } },
-  { id: "push-up", name: "Push Up", bodyPart: "chest", targets: { chest_lower: 0.5, chest_upper: 0.15, front_delts: 0.2, triceps: 0.15 } },
-  { id: "dips-chest", name: "Chest Dips", bodyPart: "chest", targets: { chest_lower: 0.6, triceps: 0.25, front_delts: 0.15 } },
+  { id: "push-up", name: "Push Up", bodyPart: "chest", targets: { chest_lower: 0.5, chest_upper: 0.15, front_delts: 0.2, triceps: 0.15 }, bodyweight: true },
+  { id: "dips-chest", name: "Chest Dips", bodyPart: "chest", targets: { chest_lower: 0.6, triceps: 0.25, front_delts: 0.15 }, bodyweight: true },
+  { id: "weighted-dips-chest", name: "Weighted Chest Dips", bodyPart: "chest", targets: { chest_lower: 0.6, triceps: 0.25, front_delts: 0.15 }, bodyweight: true },
 
   // ---------- BACK ----------
   { id: "deadlift", name: "Deadlift", bodyPart: "back", targets: { lower_back: 0.3, glutes: 0.25, hamstrings: 0.2, traps: 0.15, forearms: 0.1 } },
