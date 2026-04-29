@@ -111,7 +111,8 @@ export const EXERCISES: Exercise[] = [
   { id: "skull-crusher", name: "Skull Crusher", bodyPart: "arms", targets: { triceps: 0.95, forearms: 0.05 } },
   { id: "overhead-tricep", name: "Overhead Tricep Extension", bodyPart: "arms", targets: { triceps: 1.0 } },
   { id: "close-grip-bench", name: "Close Grip Bench", bodyPart: "arms", targets: { triceps: 0.6, chest_lower: 0.25, front_delts: 0.15 } },
-  { id: "dips-tricep", name: "Tricep Dips", bodyPart: "arms", targets: { triceps: 0.7, chest_lower: 0.2, front_delts: 0.1 } },
+  { id: "dips-tricep", name: "Tricep Dips", bodyPart: "arms", targets: { triceps: 0.7, chest_lower: 0.2, front_delts: 0.1 }, bodyweight: true },
+  { id: "weighted-dips-tricep", name: "Weighted Tricep Dips", bodyPart: "arms", targets: { triceps: 0.7, chest_lower: 0.2, front_delts: 0.1 }, bodyweight: true },
   { id: "wrist-curl", name: "Wrist Curl", bodyPart: "arms", targets: { forearms: 1.0 } },
 
   // ---------- CORE ----------
