@@ -287,13 +287,13 @@ const MusclePerformance = () => {
                   unit={topSet ? "kg × reps" : "no weighted sets"}
                 />
                 <StatCard
-                  label="Not trained"
-                  value={daysUntrained ? (daysUntrained.days === 0 ? "Today" : String(daysUntrained.days)) : "—"}
+                  label="Rest days"
+                  value={daysUntrained ? String(daysUntrained.days) : "—"}
                   unit={
                     daysUntrained
                       ? daysUntrained.days === 0
                         ? "trained today"
-                        : `day${daysUntrained.days === 1 ? "" : "s"} ago`
+                        : `day${daysUntrained.days === 1 ? "" : "s"} since last session`
                       : "never trained"
                   }
                 />
