@@ -60,8 +60,10 @@ export const EXERCISES: Exercise[] = [
 
   // ---------- BACK ----------
   { id: "deadlift", name: "Deadlift", bodyPart: "back", targets: { lower_back: 0.3, glutes: 0.25, hamstrings: 0.2, traps: 0.15, forearms: 0.1 } },
-  { id: "pull-up", name: "Pull Up", bodyPart: "back", targets: { lats: 0.6, biceps: 0.2, rhomboids: 0.15, forearms: 0.05 } },
-  { id: "chin-up", name: "Chin Up", bodyPart: "back", targets: { lats: 0.5, biceps: 0.35, rhomboids: 0.15 } },
+  { id: "pull-up", name: "Pull Up", bodyPart: "back", targets: { lats: 0.6, biceps: 0.2, rhomboids: 0.15, forearms: 0.05 }, bodyweight: true },
+  { id: "weighted-pull-up", name: "Weighted Pull Up", bodyPart: "back", targets: { lats: 0.6, biceps: 0.2, rhomboids: 0.15, forearms: 0.05 }, bodyweight: true },
+  { id: "chin-up", name: "Chin Up", bodyPart: "back", targets: { lats: 0.5, biceps: 0.35, rhomboids: 0.15 }, bodyweight: true },
+  { id: "weighted-chin-up", name: "Weighted Chin Up", bodyPart: "back", targets: { lats: 0.5, biceps: 0.35, rhomboids: 0.15 }, bodyweight: true },
   { id: "lat-pulldown", name: "Lat Pulldown", bodyPart: "back", targets: { lats: 0.65, biceps: 0.2, rhomboids: 0.15 } },
   { id: "barbell-row", name: "Barbell Row", bodyPart: "back", targets: { lats: 0.4, rhomboids: 0.25, traps: 0.15, biceps: 0.1, lower_back: 0.1 } },
   { id: "db-row", name: "Dumbbell Row", bodyPart: "back", targets: { lats: 0.45, rhomboids: 0.25, traps: 0.15, biceps: 0.15 } },
