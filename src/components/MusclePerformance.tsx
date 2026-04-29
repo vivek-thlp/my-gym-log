@@ -136,6 +136,21 @@ const MusclePerformance = () => {
       }));
   }, [workouts, selectedMuscle]);
 
+  // Days since this muscle was last trained.
+  const daysUntrained = useMemo(() => {
+    if (!selectedMuscle) return null;
+    let lastDate: Date | null = null;
+    workouts.forEach((w) => {
+      const primary = primaryByExercise.get(w.exercise_name.toLowerCase());
+      if (primary !== selectedMuscle) return;
+      const d = parseISO(w.workout_date);
+      if (!lastDate || d > lastDate) lastDate = d;
+    });
+    if (!lastDate) return null;
+    const diff = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+    return { days: diff, lastDate };
+  }, [workouts, selectedMuscle]);
+
   // Top set (heaviest weight; tiebreak by reps) for the selected muscle, all-time.
   const topSet = useMemo(() => {
     if (!selectedMuscle) return null;
@@ -271,13 +286,17 @@ const MusclePerformance = () => {
                   value={topSet ? `${topSet.weight} × ${topSet.reps}` : "—"}
                   unit={topSet ? "kg × reps" : "no weighted sets"}
                 />
-                {range !== "all" && (
-                  <StatCard
-                    label="Total volume"
-                    value={stats.totalVolume.toLocaleString()}
-                    unit="all time"
-                  />
-                )}
+                <StatCard
+                  label="Not trained"
+                  value={daysUntrained ? (daysUntrained.days === 0 ? "Today" : String(daysUntrained.days)) : "—"}
+                  unit={
+                    daysUntrained
+                      ? daysUntrained.days === 0
+                        ? "trained today"
+                        : `day${daysUntrained.days === 1 ? "" : "s"} ago`
+                      : "never trained"
+                  }
+                />
               </div>
 
               {filteredSeries.length > 1 ? (
