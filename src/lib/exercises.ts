@@ -40,6 +40,8 @@ export interface Exercise {
   bodyPart: string; // matches BODY_PARTS id
   // weight 0–1: share of stimulus going to each muscle. Weights sum ≈ 1 per exercise.
   targets: Partial<Record<Muscle, number>>;
+  // True for exercises where lifted load = bodyweight (+ optional added plate).
+  bodyweight?: boolean;
 }
 
 export const EXERCISES: Exercise[] = [
