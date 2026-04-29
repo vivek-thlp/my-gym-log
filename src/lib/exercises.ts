@@ -40,6 +40,8 @@ export interface Exercise {
   bodyPart: string; // matches BODY_PARTS id
   // weight 0–1: share of stimulus going to each muscle. Weights sum ≈ 1 per exercise.
   targets: Partial<Record<Muscle, number>>;
+  // True for exercises where lifted load = bodyweight (+ optional added plate).
+  bodyweight?: boolean;
 }
 
 export const EXERCISES: Exercise[] = [
@@ -52,13 +54,16 @@ export const EXERCISES: Exercise[] = [
   { id: "db-fly", name: "Dumbbell Fly", bodyPart: "chest", targets: { chest_lower: 0.55, chest_upper: 0.3, front_delts: 0.15 } },
   { id: "cable-crossover", name: "Cable Crossover", bodyPart: "chest", targets: { chest_lower: 0.5, chest_upper: 0.35, front_delts: 0.15 } },
   { id: "pec-deck", name: "Pec Deck", bodyPart: "chest", targets: { chest_lower: 0.5, chest_upper: 0.4, front_delts: 0.1 } },
-  { id: "push-up", name: "Push Up", bodyPart: "chest", targets: { chest_lower: 0.5, chest_upper: 0.15, front_delts: 0.2, triceps: 0.15 } },
-  { id: "dips-chest", name: "Chest Dips", bodyPart: "chest", targets: { chest_lower: 0.6, triceps: 0.25, front_delts: 0.15 } },
+  { id: "push-up", name: "Push Up", bodyPart: "chest", targets: { chest_lower: 0.5, chest_upper: 0.15, front_delts: 0.2, triceps: 0.15 }, bodyweight: true },
+  { id: "dips-chest", name: "Chest Dips", bodyPart: "chest", targets: { chest_lower: 0.6, triceps: 0.25, front_delts: 0.15 }, bodyweight: true },
+  { id: "weighted-dips-chest", name: "Weighted Chest Dips", bodyPart: "chest", targets: { chest_lower: 0.6, triceps: 0.25, front_delts: 0.15 }, bodyweight: true },
 
   // ---------- BACK ----------
   { id: "deadlift", name: "Deadlift", bodyPart: "back", targets: { lower_back: 0.3, glutes: 0.25, hamstrings: 0.2, traps: 0.15, forearms: 0.1 } },
-  { id: "pull-up", name: "Pull Up", bodyPart: "back", targets: { lats: 0.6, biceps: 0.2, rhomboids: 0.15, forearms: 0.05 } },
-  { id: "chin-up", name: "Chin Up", bodyPart: "back", targets: { lats: 0.5, biceps: 0.35, rhomboids: 0.15 } },
+  { id: "pull-up", name: "Pull Up", bodyPart: "back", targets: { lats: 0.6, biceps: 0.2, rhomboids: 0.15, forearms: 0.05 }, bodyweight: true },
+  { id: "weighted-pull-up", name: "Weighted Pull Up", bodyPart: "back", targets: { lats: 0.6, biceps: 0.2, rhomboids: 0.15, forearms: 0.05 }, bodyweight: true },
+  { id: "chin-up", name: "Chin Up", bodyPart: "back", targets: { lats: 0.5, biceps: 0.35, rhomboids: 0.15 }, bodyweight: true },
+  { id: "weighted-chin-up", name: "Weighted Chin Up", bodyPart: "back", targets: { lats: 0.5, biceps: 0.35, rhomboids: 0.15 }, bodyweight: true },
   { id: "lat-pulldown", name: "Lat Pulldown", bodyPart: "back", targets: { lats: 0.65, biceps: 0.2, rhomboids: 0.15 } },
   { id: "barbell-row", name: "Barbell Row", bodyPart: "back", targets: { lats: 0.4, rhomboids: 0.25, traps: 0.15, biceps: 0.1, lower_back: 0.1 } },
   { id: "db-row", name: "Dumbbell Row", bodyPart: "back", targets: { lats: 0.45, rhomboids: 0.25, traps: 0.15, biceps: 0.15 } },
@@ -106,7 +111,8 @@ export const EXERCISES: Exercise[] = [
   { id: "skull-crusher", name: "Skull Crusher", bodyPart: "arms", targets: { triceps: 0.95, forearms: 0.05 } },
   { id: "overhead-tricep", name: "Overhead Tricep Extension", bodyPart: "arms", targets: { triceps: 1.0 } },
   { id: "close-grip-bench", name: "Close Grip Bench", bodyPart: "arms", targets: { triceps: 0.6, chest_lower: 0.25, front_delts: 0.15 } },
-  { id: "dips-tricep", name: "Tricep Dips", bodyPart: "arms", targets: { triceps: 0.7, chest_lower: 0.2, front_delts: 0.1 } },
+  { id: "dips-tricep", name: "Tricep Dips", bodyPart: "arms", targets: { triceps: 0.7, chest_lower: 0.2, front_delts: 0.1 }, bodyweight: true },
+  { id: "weighted-dips-tricep", name: "Weighted Tricep Dips", bodyPart: "arms", targets: { triceps: 0.7, chest_lower: 0.2, front_delts: 0.1 }, bodyweight: true },
   { id: "wrist-curl", name: "Wrist Curl", bodyPart: "arms", targets: { forearms: 1.0 } },
 
   // ---------- CORE ----------

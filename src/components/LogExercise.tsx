@@ -32,6 +32,7 @@ const LogExercise = ({ bodyPart, onBack, onLogged }: Props) => {
   const [sets, setSets] = useState("3");
   const [reps, setReps] = useState("10");
   const [weight, setWeight] = useState("");
+  const [bodyWeight, setBodyWeight] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [submitting, setSubmitting] = useState(false);
   const [logCount, setLogCount] = useState(0);
@@ -46,7 +47,19 @@ const LogExercise = ({ bodyPart, onBack, onLogged }: Props) => {
     e.preventDefault();
     if (!user || !selected) return;
 
-    const parsed = schema.safeParse({ exercise_name: selected.name, sets, reps, weight });
+    // For bodyweight exercises: total load per rep = bodyweight + added weight (if any).
+    let effectiveWeight: string | number = weight;
+    if (selected.bodyweight) {
+      const bw = parseFloat(bodyWeight);
+      if (!bw || bw <= 0) {
+        toast.error("Enter your body weight");
+        return;
+      }
+      const added = weight === "" ? 0 : parseFloat(weight);
+      effectiveWeight = bw + (isNaN(added) ? 0 : added);
+    }
+
+    const parsed = schema.safeParse({ exercise_name: selected.name, sets, reps, weight: effectiveWeight });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
@@ -154,18 +167,33 @@ const LogExercise = ({ bodyPart, onBack, onLogged }: Props) => {
                 required
               />
             </Field>
-            <Field label="Weight">
+            <Field label={selected.bodyweight ? "Added" : "Weight"}>
               <Input
                 type="number"
                 inputMode="decimal"
                 step="0.5"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
-                placeholder="kg"
+                placeholder={selected.bodyweight ? "+kg" : "kg"}
                 className="h-12 rounded-xl border-border bg-secondary text-base text-center"
               />
             </Field>
           </div>
+
+          {selected.bodyweight && (
+            <Field label="Body weight">
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="0.5"
+                value={bodyWeight}
+                onChange={(e) => setBodyWeight(e.target.value)}
+                placeholder="kg"
+                className="h-12 rounded-xl border-border bg-secondary text-base"
+                required
+              />
+            </Field>
+          )}
 
           <Field label="Date">
             <Input

@@ -81,7 +81,7 @@ const MusclePerformance = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMuscle, setSelectedMuscle] = useState<PrimaryMuscle | null>(null);
-  const [range, setRange] = useState<7 | 30>(30);
+  const [range, setRange] = useState<7 | 30 | 60 | "all">(30);
 
   useEffect(() => {
     const load = async () => {
@@ -155,29 +155,40 @@ const MusclePerformance = () => {
     return best;
   }, [workouts, selectedMuscle]);
 
-  // Stats: window (7 or 30 days) vs previous equal window.
+  // Stats: window vs previous equal window. For "all": no windowed comparison.
   const stats = useMemo(() => {
     if (!selectedMuscle) return null;
     const now = new Date();
-    const cutoff = subDays(now, range);
-    const prevCutoff = subDays(now, range * 2);
 
     let recent = 0;
     let previous = 0;
     let totalSessions = 0;
     let totalVolume = 0;
 
+    const isAll = range === "all";
+    const days = isAll ? 0 : (range as number);
+    const cutoff = isAll ? null : subDays(now, days);
+    const prevCutoff = isAll ? null : subDays(now, days * 2);
+
     series.forEach((s) => {
       const d = parseISO(s.date);
       totalSessions += 1;
       totalVolume += s.volume;
-      if (d >= cutoff) recent += s.volume;
-      else if (d >= prevCutoff) previous += s.volume;
+      if (!isAll && cutoff && prevCutoff) {
+        if (d >= cutoff) recent += s.volume;
+        else if (d >= prevCutoff) previous += s.volume;
+      }
     });
 
     const change = previous === 0 ? (recent > 0 ? 100 : 0) : ((recent - previous) / previous) * 100;
     return { recent, previous, change, totalSessions, totalVolume };
   }, [series, selectedMuscle, range]);
+
+  const filteredSeries = useMemo(() => {
+    if (range === "all") return series;
+    const cutoff = subDays(new Date(), range as number);
+    return series.filter((s) => parseISO(s.date) >= cutoff);
+  }, [series, range]);
 
   if (loading) {
     return (
@@ -226,28 +237,30 @@ const MusclePerformance = () => {
           {selectedMuscle && stats && (
             <>
               <div className="flex gap-1 p-1 bg-secondary rounded-full mb-4 w-fit">
-                {([7, 30] as const).map((r) => (
+                {([7, 30, 60, "all"] as const).map((r) => (
                   <button
-                    key={r}
+                    key={String(r)}
                     onClick={() => setRange(r)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                       range === r
                         ? "bg-background text-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    {r} days
+                    {r === "all" ? "All time" : `${r} days`}
                   </button>
                 ))}
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-5">
-                <StatCard
-                  label={`Last ${range} days`}
-                  value={stats.recent.toLocaleString()}
-                  unit="vol"
-                  trend={stats.change}
-                />
+                {range !== "all" && (
+                  <StatCard
+                    label={`Last ${range} days`}
+                    value={stats.recent.toLocaleString()}
+                    unit="vol"
+                    trend={stats.change}
+                  />
+                )}
                 <StatCard
                   label="Sessions"
                   value={String(stats.totalSessions)}
@@ -258,21 +271,23 @@ const MusclePerformance = () => {
                   value={topSet ? `${topSet.weight} × ${topSet.reps}` : "—"}
                   unit={topSet ? "kg × reps" : "no weighted sets"}
                 />
-                <StatCard
-                  label="Total volume"
-                  value={stats.totalVolume.toLocaleString()}
-                  unit="all time"
-                />
+                {range !== "all" && (
+                  <StatCard
+                    label="Total volume"
+                    value={stats.totalVolume.toLocaleString()}
+                    unit="all time"
+                  />
+                )}
               </div>
 
-              {series.length > 1 ? (
+              {filteredSeries.length > 1 ? (
                 <div className="p-4 bg-surface rounded-2xl border border-border mb-5 animate-scale-in">
                   <div className="flex items-baseline justify-between mb-3">
                     <p className="text-sm font-medium">{PRIMARY_LABELS[selectedMuscle]} volume</p>
                     <p className="text-xs text-muted-foreground">sets × reps × weight</p>
                   </div>
                   <ResponsiveContainer width="100%" height={180}>
-                    <LineChart data={series} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+                    <LineChart data={filteredSeries} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                       <XAxis
                         dataKey="label"
@@ -317,7 +332,7 @@ const MusclePerformance = () => {
                   Recent sessions
                 </p>
                 <div className="bg-surface rounded-2xl border border-border overflow-hidden">
-                  {series
+                  {filteredSeries
                     .slice(-8)
                     .reverse()
                     .map((s, i, arr) => (
