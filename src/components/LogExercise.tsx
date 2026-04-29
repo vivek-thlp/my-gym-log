@@ -47,7 +47,19 @@ const LogExercise = ({ bodyPart, onBack, onLogged }: Props) => {
     e.preventDefault();
     if (!user || !selected) return;
 
-    const parsed = schema.safeParse({ exercise_name: selected.name, sets, reps, weight });
+    // For bodyweight exercises: total load per rep = bodyweight + added weight (if any).
+    let effectiveWeight: string | number = weight;
+    if (selected.bodyweight) {
+      const bw = parseFloat(bodyWeight);
+      if (!bw || bw <= 0) {
+        toast.error("Enter your body weight");
+        return;
+      }
+      const added = weight === "" ? 0 : parseFloat(weight);
+      effectiveWeight = bw + (isNaN(added) ? 0 : added);
+    }
+
+    const parsed = schema.safeParse({ exercise_name: selected.name, sets, reps, weight: effectiveWeight });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
