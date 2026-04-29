@@ -286,17 +286,19 @@ const MusclePerformance = () => {
                   value={topSet ? `${topSet.weight} × ${topSet.reps}` : "—"}
                   unit={topSet ? "kg × reps" : "no weighted sets"}
                 />
-                <StatCard
-                  label="Rest days"
-                  value={daysUntrained ? String(daysUntrained.days) : "—"}
-                  unit={
-                    daysUntrained
-                      ? daysUntrained.days === 0
-                        ? "trained today"
-                        : `day${daysUntrained.days === 1 ? "" : "s"} since last session`
-                      : "never trained"
-                  }
-                />
+                {range !== "all" && (
+                  <StatCard
+                    label="Rest days"
+                    value={daysUntrained ? String(daysUntrained.days) : "—"}
+                    unit={
+                      daysUntrained
+                        ? daysUntrained.days === 0
+                          ? "trained today"
+                          : `day${daysUntrained.days === 1 ? "" : "s"} since last session`
+                        : "never trained"
+                    }
+                  />
+                )}
               </div>
 
               {filteredSeries.length > 1 ? (
