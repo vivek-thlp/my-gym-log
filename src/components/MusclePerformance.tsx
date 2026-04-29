@@ -332,7 +332,7 @@ const MusclePerformance = () => {
                   Recent sessions
                 </p>
                 <div className="bg-surface rounded-2xl border border-border overflow-hidden">
-                  {series
+                  {filteredSeries
                     .slice(-8)
                     .reverse()
                     .map((s, i, arr) => (
