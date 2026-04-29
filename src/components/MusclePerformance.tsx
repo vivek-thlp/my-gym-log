@@ -184,6 +184,12 @@ const MusclePerformance = () => {
     return { recent, previous, change, totalSessions, totalVolume };
   }, [series, selectedMuscle, range]);
 
+  const filteredSeries = useMemo(() => {
+    if (range === "all") return series;
+    const cutoff = subDays(new Date(), range as number);
+    return series.filter((s) => parseISO(s.date) >= cutoff);
+  }, [series, range]);
+
   if (loading) {
     return (
       <div className="animate-pulse space-y-3">
