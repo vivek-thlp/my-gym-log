@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BODY_PARTS } from "@/lib/bodyParts";
+import Muscle3D from "@/components/Muscle3D";
 
 interface Props {
   onSelect: (id: string) => void;
