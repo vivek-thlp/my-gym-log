@@ -92,10 +92,10 @@ const BodyPartPicker = ({ onSelect }: Props) => {
               <button
                 onClick={() => handleItemClick(i)}
                 aria-label={bp.label}
-                className={`relative aspect-square w-full rounded-3xl overflow-hidden border bg-card flex items-end justify-center p-4 tap-scale transition-all duration-500 ease-out ${
+                className={`relative aspect-square w-full flex items-center justify-center tap-scale transition-all duration-500 ease-out ${
                   isActive
-                    ? "scale-100 border-primary/60 shadow-[0_0_60px_-10px_hsl(var(--primary)/0.45)] opacity-100"
-                    : "scale-[0.7] border-border opacity-50"
+                    ? "scale-100 opacity-100 drop-shadow-[0_0_30px_hsl(var(--primary)/0.45)]"
+                    : "scale-[0.65] opacity-40"
                 }`}
               >
                 <img
@@ -104,9 +104,8 @@ const BodyPartPicker = ({ onSelect }: Props) => {
                   loading="lazy"
                   width={512}
                   height={512}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/0 to-background/0" />
               </button>
             </div>
           );
