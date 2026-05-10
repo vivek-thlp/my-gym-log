@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BODY_PARTS } from "@/lib/bodyParts";
+import Muscle3D from "@/components/Muscle3D";
 
 interface Props {
   onSelect: (id: string) => void;
@@ -98,14 +99,9 @@ const BodyPartPicker = ({ onSelect }: Props) => {
                     : "scale-[0.65] opacity-40"
                 }`}
               >
-                <img
-                  src={bp.image}
-                  alt={bp.label}
-                  loading="lazy"
-                  width={512}
-                  height={512}
-                  className="w-full h-full object-contain"
-                />
+                <div className="w-full h-full">
+                  <Muscle3D highlight={bp.id as any} spinning={isActive} />
+                </div>
               </button>
             </div>
           );
