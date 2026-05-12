@@ -60,7 +60,7 @@ const BodyMesh = () => {
       }
     });
     return obj;
-  }, [fbx]);
+  }, [scene]);
 
   return <primitive object={cloned} />;
 };
