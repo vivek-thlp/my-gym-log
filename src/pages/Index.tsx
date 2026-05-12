@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import BodyPartPicker from "@/components/BodyPartPicker";
+import BodyModel3D from "@/components/BodyModel3D";
 import LogExercise from "@/components/LogExercise";
 import ProgressView from "@/components/Progress";
 import MusclePerformance from "@/components/MusclePerformance";
@@ -65,7 +65,7 @@ const Index = () => {
       {/* Content */}
       <main className="flex-1 w-full max-w-md mx-auto px-5 pt-6 pb-28">
         {tab === "log" && step === "pick" && (
-          <BodyPartPicker onSelect={handleSelectBody} />
+          <BodyModel3D onSelect={handleSelectBody} />
         )}
         {tab === "log" && step === "logging" && bodyPart && (
           <LogExercise
