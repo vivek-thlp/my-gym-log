@@ -1,5 +1,5 @@
 import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
-import { OrbitControls, useFBX, Center, Bounds, Html } from "@react-three/drei";
+import { OrbitControls, useGLTF, Center, Bounds, Html } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { BODY_PARTS, BodyPartId } from "@/lib/bodyParts";
@@ -32,10 +32,10 @@ interface ModelProps {
 }
 
 const BodyMesh = () => {
-  const fbx = useFBX("/models/male_body.fbx");
+  const { scene } = useGLTF("/models/male_body.glb");
 
   const cloned = useMemo(() => {
-    const obj = fbx.clone(true);
+    const obj = scene.clone(true);
     // Compute bounding box & normalize size + center
     const box = new THREE.Box3().setFromObject(obj);
     const size = new THREE.Vector3();
@@ -60,7 +60,7 @@ const BodyMesh = () => {
       }
     });
     return obj;
-  }, [fbx]);
+  }, [scene]);
 
   return <primitive object={cloned} />;
 };
@@ -208,6 +208,6 @@ const BodyModel3D = ({ onSelect }: Props) => {
 };
 
 // Preload model
-useFBX.preload("/models/male_body.fbx");
+useGLTF.preload("/models/male_body.glb");
 
 export default BodyModel3D;
